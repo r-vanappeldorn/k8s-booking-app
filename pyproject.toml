@@ -3,6 +3,24 @@ name = "cz_conventional_commits"
 version = "0.1.0"
 tag_format = "v$version"
 
-# Alleen deze scopes (services) toestaan
-[tool.commitizen.customize]
-scopes = ["account-service", "booking-service", "frontend"]
+# Verplicht type + (optionele) scope uit onderstaande lijst + optioneel "!"
+# Voorbeeld geldig: "feat(account-service): add endpoint"
+#                   "fix!: break compatibility"
+#                   "chore(root): update pre-commit hooks"
+commit_parser = """
+(?x)
+^(?P<type>build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)
+(?:\\((?P<scope>account-service|booking-service|frontend|root)\\))?
+(?P<breaking>!)?
+:\\s(?P<subject>.+)
+$
+"""
+
+# (optioneel maar handig) beschrijvende schema-string voor contributors
+schema = "<type>(<scope>)?: <subject>"
+schema_pattern = "^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)(\\((account-service|booking-service|frontend|root)\\))?(!)?: .+$"
+
+# (optioneel) mapping voor changelog
+change_type_map = { feat = "Features", fix = "Bug Fixes", perf = "Performance", refactor = "Refactors", docs = "Docs", test = "Tests", build = "Build", ci = "CI", chore = "Chores", style = "Style", revert = "Reverts" }
+
+scopes = ["account-service", "booking-service", "frontend", "root"]
