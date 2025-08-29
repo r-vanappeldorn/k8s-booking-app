@@ -1,0 +1,21 @@
+ApiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name: accounts-service
+  labels:
+    app: accounts-service
+sepc:
+  replicas: 1
+  selector: 
+    matchLabels:
+      app: accounts-service
+  template:
+    metadata:
+      labels:
+        app: accounts-service
+    spec:
+      container:
+        - name: accounts-service
+          image: rvanappeldorn/accounts-service-fast-api
+          ports:
+            - containerPort: 8000
