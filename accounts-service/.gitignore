@@ -25,16 +25,6 @@ venv/
 .env
 .env.*
 
-# ---- Node / Next.js ----
-node_modules/
-.next/
-out/
-dist/
-.npm/
-.pnpm/
-yarn.lock
-package-lock.json
-
 # ---- Docker ----
 *.pid
 *.seed
@@ -63,11 +53,6 @@ coverage/
 .terraform/
 .terraform.lock.hcl
 
-# ---- Kubernetes / Secrets ----
-*.secret.yaml
-secrets.yaml
-
-# ---- Misc ----
 # Ignore everything in build output dirs
 build/
 tmp/
