@@ -17,6 +17,7 @@ spec:
     spec:
       containers:
         - name: accounts-service
-          image: rvanappeldorn/accounts-service-fast-api
+          image: docker.io/rvanappeldorn/accounts-service-fast-api:latest
+          imagePullPolicy: Never
           ports:
             - containerPort: 8000
