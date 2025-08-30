@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
+      PYTHONPATH: accounts-service/
       PIPENV_VENV_IN_PROJECT: "1"
 
     steps:
@@ -33,7 +34,7 @@ jobs:
       - name: Cache root .venv (pipenv)
         uses: actions/cache@v4
         with:
-          path: .venv
+          path: accounts-service/.venv
           key: venv-${{ runner.os }}-py${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('Pipfile.lock') }}
           restore-keys: |
             venv-${{ runner.os }}-py${{ steps.setup-python.outputs.python-version }}-
@@ -44,16 +45,12 @@ jobs:
           python -m pip install pipenv
 
       # ⬇️ Deps installeren in de ROOT (waar je Pipfile staat)
-      - name: Install deps (root)
-        env:
-          PYTHONPATH: accounts-service/
+      - name: Install deps (account-service)
         run: |
           pipenv install --dev --deploy
 
       - name: Run pytest (accounts-service)
         working-directory: accounts-service
-        env:
-          PYTHONPATH: accounts-service/ 
         run: |
           mkdir -p test-results
           pipenv run pytest -q \
