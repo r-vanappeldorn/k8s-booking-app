@@ -1,0 +1,58 @@
+# ---- General ----
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+*.swp
+*.swo
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+.eggs/
+*.cover
+.coverage
+htmlcov/
+.mypy_cache/
+.pytest_cache/
+.tox/
+.venv/
+venv/
+.env
+.env.*
+
+# ---- Docker ----
+*.pid
+*.seed
+*.pid.lock
+docker-compose.override.yml
+
+# ---- IDE / Editor ----
+.idea/
+.vscode/
+*.iml
+
+# ---- OS specific ----
+.DS_Store
+ehthumbs.db
+Icon?
+Desktop.ini
+
+# ---- Coverage / Reports ----
+coverage/
+*.lcov
+*.xml
+
+# ---- Terraform ----
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+
+# Ignore everything in build output dirs
+build/
+tmp/
