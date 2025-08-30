@@ -6,6 +6,10 @@ name = "pypi"
 [packages]
 
 [dev-packages]
+pytest = "*"
+pytest-cov = "*"
+httpx = "*"
+anyio = "*"
 
 [requires]
 python_version = "3.13"
