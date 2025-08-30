@@ -1,0 +1,45 @@
+# Python build / cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pdb
+*.egg-info/
+.eggs/
+
+# Virtualenvs
+.venv/
+env/
+venv/
+ENV/
+
+# Byte-compiled / logs
+*.log
+
+.coverage
+htmlcov/
+
+# Docker / CI
+.dockerignore
+Dockerfile
+docker-compose.yml
+
+# Git
+.git/
+.gitignore
+
+# Editor / OS files
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Local scripts
+scripts/
+*.sh
+
+# Cache / build artifacts
+dist/
+build/
