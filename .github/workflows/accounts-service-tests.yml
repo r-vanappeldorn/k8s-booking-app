@@ -46,7 +46,7 @@ jobs:
       # ⬇️ Deps installeren in de ROOT (waar je Pipfile staat)
       - name: Install deps (root)
         env:
-          PYTHONPATH: accounts-service
+          PYTHONPATH: accounts-service/
         run: |
           pipenv install --dev --deploy
 
