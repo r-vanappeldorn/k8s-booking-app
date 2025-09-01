@@ -43,3 +43,4 @@ scripts/
 # Cache / build artifacts
 dist/
 build/
+mariadb_data
