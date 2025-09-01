@@ -6,12 +6,6 @@ services:
       - MARIADB_USER=${DB_USER:-dev}
       - MARIADB_PASSWORD=${DB_PASSWORD:-password}
       - MARIADB_ROOT_PASSWORD=${DB_ROOT_PASSWORD:-root}
-    healthcheck:
-      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 --silent"]
-      interval: 5s
-      timeout: 3s
-      retries: 60
-
   tests:
     build:
       context: .
@@ -19,8 +13,7 @@ services:
     environment:
       - DATABASE_URL=mariadb+pymysql://${DB_USER:-dev}:${DB_PASSWORD:-password}@accounts-service-db:3306/accounts?charset=utf8mb4
     depends_on:
-      accounts-service-db:
-        condition: service_healthy
+      - accounts-service-db
     command: >
       sh -lc "
       alembic upgrade head &&
