@@ -1,0 +1,29 @@
+services:
+  accounts-service-db:
+    image: mariadb:12.0.2
+    restart: always
+    environment:
+      - MARIADB_DATABASE=accounts
+      - MARIADB_USER=dev
+      - MARIADB_PASSWORD=password
+      - MARIADB_ROOT_PASSWORD=root
+    volumes:
+      - ./accounts-service/mariadb_data:/var/lib/mysql
+    ports:
+      - 3306:3306
+  accounts-service:
+    build: 
+      context: accounts-service/
+      dockerfile: Dockerfile
+    user: "${UID}:${GID}"   
+    volumes:
+      - ./accounts-service/migrations:/app/migrations
+      - ./accounts-service/alembic.ini:/app/alembic.ini
+    environment:
+      - DATABASE_URL=mariadb+pymysql://dev:password@accounts-service-db:3306/accounts?charset=utf8mb4
+    restart: always
+    depends_on:
+      - accounts-service-db
+    ports:
+      - 8000:8000
+ 
