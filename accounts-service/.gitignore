@@ -56,3 +56,4 @@ coverage/
 # Ignore everything in build output dirs
 build/
 tmp/
+mariadb_data/

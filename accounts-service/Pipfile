@@ -8,6 +8,9 @@ fastapi = "*"
 uvicorn = "*"
 pytest = "*"
 httpx = "*"
+sqlalchemy = "*"
+alembic = "*"
+pymysql = "*"
 
 [dev-packages]
 pytest = "*"
