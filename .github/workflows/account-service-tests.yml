@@ -32,8 +32,8 @@ jobs:
           DB_PASSWORD: password
           DB_ROOT_PASSWORD: root
         run: |
-          docker compose -f docker-compose.ci.yml up --build --abort-on-container-exit --exit-code-from tests
+          docker compose -f accounts-service/docker-compose-ci.yml up --build --abort-on-container-exit --exit-code-from tests
 
       - name: Compose Down
         if: always()
-        run: docker compose -f docker-compose.ci.yml down -v
+        run: docker compose -f accounts-service/docker-compose-ci.yml down -v
