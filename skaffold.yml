@@ -1,0 +1,40 @@
+apiVersion: skaffold/v4beta7
+kind: Config
+
+metadata:
+  name: accounts-dev
+
+build:
+  local:
+    push: false
+  artifacts:
+    - image: docker.io/rvanappeldorn/accounts-service-fast-api
+      context: accounts-service
+      docker:
+        dockerfile: Dockerfile
+      sync:                      
+        manual:
+          - src: "src/**/*.py"
+            dest: "/app/src"
+          - src: "main.py"
+            dest: "/app/main.py"
+          - src: "pyproject.toml"
+            dest: "/app/pyproject.toml"
+
+manifests:
+  rawYaml:
+    - k8s/accounts-service/*.yml
+    - k8s/ingress/*.yml
+    - k8s/mailhog/*.yml
+
+profiles:
+  - name: minikube
+    build:
+      local:
+        push: false
+        tryImportMissing: true     
+    patches:
+      - op: replace
+        path: /portForward/0/namespace
+        value: staging-ns          
+  - name: debug

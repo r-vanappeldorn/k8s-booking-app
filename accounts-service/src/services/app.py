@@ -10,6 +10,7 @@ def init_app() -> FastAPI:
     api_router.include_router(auth_controller)
 
     app.include_router(api_router)
+    print("hello")
 
     for r in app.router.routes:
         print(getattr(r, "methods", None), getattr(r, "path", None))
