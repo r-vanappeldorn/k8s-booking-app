@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta, timezone
 
-import jwt
+from jose import jwt
 import os
 
 SECRET_KEY = os.environ['JWT_SECRET_KEY']

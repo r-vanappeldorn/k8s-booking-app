@@ -12,7 +12,8 @@ sqlalchemy = "*"
 alembic = "*"
 pymysql = "*"
 bcrypt = "*"
-jwt = "*"
+pyjwt = "*"
+python-jose = {extras = ["bcrypt"], version = "*"}
 
 [dev-packages]
 pytest = "*"
