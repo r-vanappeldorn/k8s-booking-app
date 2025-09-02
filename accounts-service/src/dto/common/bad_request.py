@@ -11,4 +11,4 @@ class BadRequest(HTTPException):
                 "messagae": messagae
             },
             headers=headers
-            )
+        )
