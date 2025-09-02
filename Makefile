@@ -7,3 +7,6 @@ help:
 
 docker-build-account-service:
 	docker build -t rvanappeldorn/accounts-service-fast-api ./accounts-service
+
+dev:
+	docker compose build && docker compose up
