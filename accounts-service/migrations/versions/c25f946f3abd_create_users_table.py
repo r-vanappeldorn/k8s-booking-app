@@ -23,7 +23,7 @@ def upgrade() -> None:
     """Upgrade schema."""
     op.create_table(
         "user",
-        sa.Column("user_id", sa.Integer, primary_key=True),
+        sa.Column("user_id", sa.Integer, primary_key=True, autoincrement=True),
         sa.Column("email", sa.Text, unique=True, nullable=False),
         sa.Column("username", sa.Text, unique=True, nullable=False),
         sa.Column("password_hash", sa.Text, unique=True, nullable=False),
