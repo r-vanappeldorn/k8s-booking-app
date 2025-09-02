@@ -11,6 +11,8 @@ httpx = "*"
 sqlalchemy = "*"
 alembic = "*"
 pymysql = "*"
+bcrypt = "*"
+jwt = "*"
 
 [dev-packages]
 pytest = "*"
