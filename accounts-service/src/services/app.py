@@ -11,4 +11,7 @@ def init_app() -> FastAPI:
 
     app.include_router(api_router)
 
+    for r in app.router.routes:
+        print(getattr(r, "methods", None), getattr(r, "path", None))
+
     return app
