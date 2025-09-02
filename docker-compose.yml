@@ -11,6 +11,11 @@ services:
       - ./accounts-service/mariadb_data:/var/lib/mysql
     ports:
       - 3306:3306
+  mailhog:
+   image: mailhog/mailhog
+   ports:
+     - "1025:1025"   
+     - "8025:8025"  
   accounts-service:
     build: 
       context: accounts-service/
@@ -22,9 +27,14 @@ services:
     environment:
       - DATABASE_URL=mariadb+pymysql://dev:password@accounts-service-db:3306/accounts?charset=utf8mb4
       - JWT_SECRET_KEY=09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7
+      - SMTP_PORT=1025
+      - SMTP_HOST=mailhog
+      - SMTP_PASSWORD=
+      - SMTP_USER=
+      - FROM_MAIL=no-reply@example.com
+      - BASE_URL=http://localhost:8000
     restart: always
     depends_on:
       - accounts-service-db
     ports:
       - 8000:8000
- 
