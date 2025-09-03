@@ -11,6 +11,10 @@ httpx = "*"
 sqlalchemy = "*"
 alembic = "*"
 pymysql = "*"
+bcrypt = "*"
+pyjwt = "*"
+python-jose = {extras = ["bcrypt"], version = "*"}
+jinja2 = "*"
 
 [dev-packages]
 pytest = "*"
