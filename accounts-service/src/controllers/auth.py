@@ -5,6 +5,7 @@ from fastapi.responses import JSONResponse, RedirectResponse
 from urllib.parse import unquote
 
 from src.dto.auth.sign_up_request import SignUpRequest
+from src.dto.auth.sign_in_request import SignInRequest
 from src.dto.common.bad_request import BadRequest
 from src.services.deps import get_user_repository
 from src.repositories.user_repository import UserRepository
@@ -20,9 +21,11 @@ router = APIRouter()
 
 @router.get('/info')
 def info(request: Request, user_repository: UserRepository = Depends(get_user_repository)):
-    token = request.headers.get("Authorization")
-    if not token:
+    token_header = request.headers.get("Authorization")
+    if not token_header:
         raise BadRequest("NOT_AUTHORIZED", "Not authorized")
+
+    token = token_header.split(" ")[1]
     
     try:
         payload = decode_token(token)
@@ -41,6 +44,36 @@ def info(request: Request, user_repository: UserRepository = Depends(get_user_re
         "email": user.email
     }
 
+@router.post("/sign-in")
+def sign_in(sign_in_request: SignInRequest, user_repository: UserRepository = Depends(get_user_repository)):
+    user = None
+    if sign_in_request.username != None:
+        user = user_repository.get_user_by_username(sign_in_request.username)
+
+    if sign_in_request.email != None:
+        user = user_repository.get_user_by_email(sign_in_request.email)
+    
+    if not user:
+        raise BadRequest("INVALID_CREDENTIALS", "Email or username is incorrect")
+    
+    if not user.is_email_verified:
+        raise BadRequest("EMAIL_NOT_VERIFIED", "Email is not verified")
+    
+    if not user_repository.is_password_valid(sign_in_request.password, user.password_hash):
+        raise BadRequest("INVALID_PASSWORD", "Invalid password")
+    
+    token = create_access_token({
+        "sub": str(user.user_id),
+        "purpose": JWT_SIGNED_IN
+    }, 1440)
+
+    response = JSONResponse({
+        "status": "ok"
+    })
+    response.headers.append("Authorization", f"Bearer {token}")
+
+    return response
+
 @router.get('/verify-email')
 def verify_email(token: str, user_repository: UserRepository = Depends(get_user_repository)):
     unquoted_token = unquote(token)
@@ -56,18 +89,13 @@ def verify_email(token: str, user_repository: UserRepository = Depends(get_user_
     user_id = int(payload.get("sub"))
     user_repository.verify_email_by_user_id(user_id)
 
-    # token = create_access_token({
-    #     "sub": str(user_id),
-    #     "purpuse": JWT_SIGNED_IN
-    # }, 1440)
-
     url = f"{os.environ["BASE_URL"]}/singin"
     response = RedirectResponse(url)
     response.set_cookie("email_verified", "Verification succeded")
 
     return response
 
-@router.post("/signup")
+@router.post("/sign-up")
 def signUp(request: SignUpRequest, user_repository: UserRepository = Depends(get_user_repository)):
     if not EMAIL_REGEX.match(request.email):
         raise BadRequest("INVALID_EMAIL", "Email is invalid")

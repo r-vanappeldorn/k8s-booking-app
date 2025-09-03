@@ -17,7 +17,7 @@ class UserRepository:
         return self._db.query(User).filter(User.username == username).first()
 
     def create_user(self, username: str, email: str,  password: str) -> User:
-        password_hash = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
+        password_hash = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
 
         user = User(
             username=username,
@@ -35,3 +35,5 @@ class UserRepository:
         user.is_email_verified = True
         self._db.commit()
 
+    def is_password_valid(self, password: str, password_hash: str) -> bool:
+        return bcrypt.checkpw(password.encode(), password_hash.encode())
