@@ -1,24 +1,52 @@
 import re 
-from fastapi import APIRouter, Depends
+import os
+from fastapi import APIRouter, Depends, Request
 from fastapi.responses import JSONResponse, RedirectResponse
+from urllib.parse import unquote
+
 from src.dto.auth.sign_up_request import SignUpRequest
 from src.dto.common.bad_request import BadRequest
 from src.services.deps import get_user_repository
 from src.repositories.user_repository import UserRepository
 from src.models.user import User
-from src.utils.auth import create_access_token, decode_token, JWT_VERIFY_EMAIL
+from src.utils.auth import create_access_token, decode_token, JWT_VERIFY_EMAIL, JWT_SIGNED_IN
 from src.utils.mailer import send_verification_email
-
-router = APIRouter()
 
 EMAIL_REGEX = re.compile(r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
 MIN_USERNAME_LENGTH = 9
 MIN_PASSWORD_LENGTH = 12
 
-@router.get('/verify-email')
-def verify_email(token: str, user_repository: UserRepository = Depends(get_user_repository)):
+router = APIRouter()
+
+@router.get('/info')
+def info(request: Request, user_repository: UserRepository = Depends(get_user_repository)):
+    token = request.headers.get("Authorization")
+    if not token:
+        raise BadRequest("NOT_AUTHORIZED", "Not authorized")
+    
     try:
         payload = decode_token(token)
+    except Exception:
+        raise BadRequest('INVALID_TOKEN', "Token is expired")
+    
+    if payload.get("purpose") != JWT_SIGNED_IN:
+        raise BadRequest("INVALID_TOKEN", "Token is not valid")
+    
+    user_id = int(payload.get("sub"))
+    user = user_repository.get_user_by_id(user_id)
+
+    return {
+        "user_id": user.user_id,
+        "username": user.username,
+        "email": user.email
+    }
+
+@router.get('/verify-email')
+def verify_email(token: str, user_repository: UserRepository = Depends(get_user_repository)):
+    unquoted_token = unquote(token)
+
+    try:
+        payload = decode_token(unquoted_token)
     except Exception:
         raise BadRequest('INVALID_TOKEN', "Verify link is invalid or expired")
     
@@ -28,8 +56,16 @@ def verify_email(token: str, user_repository: UserRepository = Depends(get_user_
     user_id = int(payload.get("sub"))
     user_repository.verify_email_by_user_id(user_id)
 
-    # TODO: redirect to frontend with jwt token
-    return
+    # token = create_access_token({
+    #     "sub": str(user_id),
+    #     "purpuse": JWT_SIGNED_IN
+    # }, 1440)
+
+    url = f"{os.environ["BASE_URL"]}/singin"
+    response = RedirectResponse(url)
+    response.set_cookie("email_verified", "Verification succeded")
+
+    return response
 
 @router.post("/signup")
 def signUp(request: SignUpRequest, user_repository: UserRepository = Depends(get_user_repository)):

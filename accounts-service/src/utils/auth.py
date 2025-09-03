@@ -6,6 +6,7 @@ import os
 SECRET_KEY = os.environ['JWT_SECRET_KEY']
 
 JWT_VERIFY_EMAIL = 'verify_emailuser_id'
+JWT_SIGNED_IN = 'sign_in'
 
 def create_access_token(data: dict, minutes: int = 60):
     to_encode = data.copy()
