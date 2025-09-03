@@ -8,5 +8,8 @@ help:
 docker-build-account-service:
 	docker build -t rvanappeldorn/accounts-service-fast-api ./accounts-service
 
+migrate-accounts-service:
+	kubectl -n staging-ns apply -f k8s/jobs/accounts-migrate-job.yml
+
 dev:
 	docker compose build && docker compose up
