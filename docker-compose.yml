@@ -20,7 +20,7 @@ services:
     build: 
       context: accounts-service/
       dockerfile: Dockerfile
-    user: "${UID}:${GID}"   
+    user: "${USER_UID}:${GID}"   
     volumes:
       - ./accounts-service/migrations:/app/migrations
       - ./accounts-service/alembic.ini:/app/alembic.ini
