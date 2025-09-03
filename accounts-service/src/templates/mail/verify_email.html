@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="nl" style="margin:0;padding:0;">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <meta name="x-apple-disable-message-reformatting">
+  <meta name="color-scheme" content="light dark">
+  <meta name="supported-color-schemes" content="light dark">
+  <title>Bevestig je e-mailadres</title>
+  <!-- Preheader (verborgen) -->
+  <style>
+    .preheader { display:none !important; visibility:hidden; opacity:0; color:transparent; height:0; width:0; overflow:hidden; mso-hide:all; }
+    /* Dark mode */
+    @media (prefers-color-scheme: dark) {
+      body, .bg { background:#0b0e12 !important; }
+      .card { background:#11161c !important; border-color:#1c2430 !important; }
+      .text { color:#e6edf3 !important; }
+      .muted { color:#9aa7b5 !important; }
+      .btn { background:#2b90ff !important; color:#ffffff !important; }
+      a { color:#6cb6ff !important; }
+      .divider { border-top-color:#283241 !important; }
+      .logo { filter:brightness(1.2) saturate(1.1); }
+    }
+    /* Outlook fixes */
+    table, td { mso-table-lspace:0pt; mso-table-rspace:0pt; }
+    img { -ms-interpolation-mode:bicubic; border:0; outline:none; text-decoration:none; }
+    a { text-decoration:none; }
+  </style>
+</head>
+<body class="bg" style="margin:0;padding:0;background:#f6f9fc;">
+  <span class="preheader">Bevestig je e-mailadres om je account te activeren. Link verloopt na {{ token_ttl_minutes }} minuten.</span>
+
+  <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="background:#f6f9fc;">
+    <tr>
+      <td align="center" style="padding:32px 12px;">
+        <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="max-width:600px;">
+          <tr>
+            <td class="card" style="background:#ffffff;border:1px solid #e7edf3;border-radius:16px;padding:28px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td class="text" style="font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Helvetica,Arial,sans-serif;color:#0f172a;">
+                    <h1 style="margin:0 0 8px 0;font-size:22px;line-height:1.25;">Bevestig je e-mailadres</h1>
+                    <p class="muted" style="margin:0 0 20px 0;color:#475569;font-size:14px;line-height:1.6;">
+                      Hi {{ username }},<br>
+                      Click here to verify your e-mail.
+                    </p>
+
+                    <a class="btn" href="{{ link }}"
+                       style="display:inline-block;background:#2563eb;color:#ffffff;border-radius:8px;padding:12px 18px;
+                              font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Helvetica,Arial,sans-serif;
+                              font-size:16px;line-height:1;text-align:center;min-width:220px;">
+                      Verify e-mail
+                    </a>
+
+                    <p class="muted" style="margin:20px 0 0 0;color:#475569;font-size:12px;line-height:1.6;">
+                      This link will expirer in <strong>{{ minutes }}</strong> minutes.
+                    </p>
+                    <hr class="divider" style="border:none;border-top:1px solid #e7edf3;margin:24px 0;">
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

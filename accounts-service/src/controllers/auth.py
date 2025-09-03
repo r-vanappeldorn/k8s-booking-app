@@ -57,7 +57,7 @@ def signUp(request: SignUpRequest, user_repository: UserRepository = Depends(get
         "purpose": JWT_VERIFY_EMAIL
     })
 
-    send_verification_email(user.email, token)
+    send_verification_email(user.email, user.username, token)
 
     response = JSONResponse(content={
         "status": "verification_mail_send",
