@@ -7,37 +7,20 @@ from urllib.parse import unquote
 from src.dto.auth.sign_up_request import SignUpRequest
 from src.dto.auth.sign_in_request import SignInRequest
 from src.dto.common.bad_request import BadRequest
-from src.services.deps import get_user_repository
-from src.repositories.user_repository import UserRepository
+from src.repositories.user_repository import UserRepository, get_user_repository
 from src.models.user import User
 from src.utils.auth import create_access_token, decode_token, JWT_VERIFY_EMAIL, JWT_SIGNED_IN
 from src.utils.mailer import send_verification_email
+from src.middleware.auth_middleware import get_current_user
 
 EMAIL_REGEX = re.compile(r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
 MIN_USERNAME_LENGTH = 9
 MIN_PASSWORD_LENGTH = 12
 
-router = APIRouter()
+router = APIRouter(prefix="/auth")
 
 @router.get('/info')
-def info(request: Request, user_repository: UserRepository = Depends(get_user_repository)):
-    token_header = request.headers.get("Authorization")
-    if not token_header:
-        raise BadRequest("NOT_AUTHORIZED", "Not authorized")
-
-    token = token_header.split(" ")[1]
-    
-    try:
-        payload = decode_token(token)
-    except Exception:
-        raise BadRequest('INVALID_TOKEN', "Token is expired")
-    
-    if payload.get("purpose") != JWT_SIGNED_IN:
-        raise BadRequest("INVALID_TOKEN", "Token is not valid")
-    
-    user_id = int(payload.get("sub"))
-    user = user_repository.get_user_by_id(user_id)
-
+def info(user: User = Depends(get_current_user)):
     return {
         "user_id": user.user_id,
         "username": user.username,

@@ -2,6 +2,11 @@ import bcrypt
 from typing import Optional
 from src.models.user import User
 from sqlalchemy.orm import Session
+from typing import Iterator
+from fastapi import Depends
+from sqlalchemy.orm import Session
+
+from src.services.database import get_db
 
 class UserRepository:
     def __init__(self, db: Session):
@@ -37,3 +42,7 @@ class UserRepository:
 
     def is_password_valid(self, password: str, password_hash: str) -> bool:
         return bcrypt.checkpw(password.encode(), password_hash.encode())
+
+
+def get_user_repository(db: Session = Depends(get_db)) -> Iterator[UserRepository]:
+    yield UserRepository(db)
