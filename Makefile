@@ -12,7 +12,7 @@ docker-build-accounts-service: ## Builds accounts service docker container
 	docker build -t rvanappeldorn/accounts-service-fast-api ./accounts-service
 
 docker-build-trips-service: ## Builds trips service docker container
-	docker build -t rvanappeldorn/trips-service-fast-api ./trips-service
+	docker build -t rvanappeldorn/trips-service ./trips-service
 
 migrate-accounts-service: ## Migrates accounts service in staging namespace
 	kubectl -n staging-ns apply -f k8s/jobs/accounts-migrate-job.yml

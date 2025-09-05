@@ -18,3 +18,10 @@ spec:
                 name: accounts-service-srv
                 port:
                   number: 80
+          - path: /api/trips/?(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: trips-service-srv
+                port:
+                  number: 80
