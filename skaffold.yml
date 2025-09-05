@@ -8,6 +8,16 @@ build:
   local:
     push: false
   artifacts:
+    - image: docker.io/rvanappeldorn/trips-service
+      context: trips-service
+      docker:
+        dockerfile: Dockerfile
+      sync:                      
+        manual:
+          - src: "src/**/*.php"
+            dest: "/app/src"
+          - src: "composer.json"
+            dest: "/app/composer.json"
     - image: docker.io/rvanappeldorn/accounts-service-fast-api
       context: accounts-service
       docker:
@@ -24,6 +34,7 @@ build:
 manifests:
   rawYaml:
     - k8s/accounts-service/*.yml
+    - k8s/trips-service/*.yml
     - k8s/ingress/*.yml
     - k8s/mailhog/*.yml
 
