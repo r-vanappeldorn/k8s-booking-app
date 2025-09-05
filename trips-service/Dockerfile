@@ -1,11 +1,14 @@
 FROM composer:2 AS composer_builder
-WORKDIR /app
 
-FROM php:8.3-fpm-alpine as runtime
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+WORKDIR /app
 
 COPY composer.json composer.lock ./
 
-RUN composer install --prefer-dist --no-progress --no-interaction
+RUN composer install --prefer-dist --no-progress --no-interaction --no-scripts
+
+FROM php:8.3-fpm-alpine as runtime
 
 RUN apk add --no-cache \
     icu-dev libzip-dev oniguruma-dev \
@@ -32,5 +35,5 @@ EXPOSE 9000
 HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
   CMD php -v || exit 1
 
-CMD ["php-fmp"]
+CMD ["php-fpm"]
 
