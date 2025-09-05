@@ -38,3 +38,18 @@ services:
       - accounts-service-db
     ports:
       - 8000:8000
+  trips-service-php:
+    build:
+      context: trips-service/
+      dockerfile: Dockerfile
+    user: "${USER_UID}:${GID}"   
+    restart: always
+  trips-service-nginx:
+    image: nginx:1.27-alpine
+    depends_on: 
+      - trips-service-php
+    ports:
+      - 80:80
+    volumes:
+      - ./trips-service:/var/www/html:ro
+      - ./trips-service/nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
