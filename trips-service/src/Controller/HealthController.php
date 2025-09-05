@@ -8,7 +8,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class HealthController extends AbstractController
 {
-    #[Route('/api/health')]
+    #[Route('/health')]
     public function health(): JsonResponse 
     {
         return new JsonResponse(["status" => "ok"]);
