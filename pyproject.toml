@@ -23,4 +23,4 @@ schema_pattern = "^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test
 # (optioneel) mapping voor changelog
 change_type_map = { feat = "Features", fix = "Bug Fixes", perf = "Performance", refactor = "Refactors", docs = "Docs", test = "Tests", build = "Build", ci = "CI", chore = "Chores", style = "Style", revert = "Reverts" }
 
-scopes = ["account-service", "booking-service", "frontend", "root"]
+scopes = ["account-service", "booking-service", "frontend", "root", "trips-service"]
