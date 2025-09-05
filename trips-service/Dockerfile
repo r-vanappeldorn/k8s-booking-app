@@ -8,7 +8,7 @@ COPY composer.json composer.lock ./
 
 RUN composer install --prefer-dist --no-progress --no-interaction --no-scripts
 
-FROM php:8.3-fpm-alpine as runtime
+FROM php:8.3-fpm-alpine AS runtime
 
 RUN apk add --no-cache \
     icu-dev libzip-dev oniguruma-dev \
