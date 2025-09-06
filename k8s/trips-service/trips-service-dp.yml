@@ -15,6 +15,10 @@ spec:
       labels:
         app: trips-service
     spec:
+      initContainers:
+        - name: wait-for-db
+          image: busybox
+          command: ['sh', '-c', 'until nc -z trips-service-db-srv 3306; do echo waiting for db; sleep 2; done']
       containers:
         - name: trips-service-php
           image: docker.io/rvanappeldorn/trips-service:latest
@@ -38,7 +42,7 @@ spec:
               valueFrom:
                 secretKeyRef: { name: trips-db-credentials, key: password }
             - name: DATABASE_URL
-              value: mariadb+pymysql://$(DB_USER):$(DB_PASSWORD)@trips-service-db-srv.$(POD_NAMESPACE).svc.cluster.local:3306/accounts?charset=utf8mb4
+              value: mariadb+pymysql://$(DB_USER):$(DB_PASSWORD)@trips-service-db-srv.$(POD_NAMESPACE).svc.cluster.local:3306/trips?charset=utf8mb4
           ports:
             - containerPort: 9000
         - name: trip-service-nginx
