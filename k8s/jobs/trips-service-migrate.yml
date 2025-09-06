@@ -1,0 +1,42 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: trips-service-migrate
+  namespace: staging-ns
+  labels:
+    app: trips-service
+    job: trips-service-migrate
+spec:
+  backoffLimit: 1
+  ttlSecondsAfterFinished: 300
+  template: 
+    metadata:
+      labels:
+        app: trips-service
+        job: trips-service-migrate
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: migrate
+        image: docker.io/rvanappeldorn/trips-service:latest
+        imagePullPolicy: Never
+        env:
+          - name: POD_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: DB_USER
+            valueFrom:
+              secretKeyRef: { name: trips-db-credentials, key: user }
+          - name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef: { name: trips-db-credentials, key: password }
+          - name: DATABASE_URL
+            value: mariadb+pymysql://$(DB_USER):$(DB_PASSWORD)@trips-service-db-srv.$(POD_NAMESPACE).svc.cluster.local:3306/trips?charset=utf8mb4
+        command: ["sh", "-c"]
+        args:
+          - |
+            set -e
+            echo "Running Alembic migrations..."
+            php bin/console doctrine:migrations:migrate
+            echo "✅ Migrations complete"
