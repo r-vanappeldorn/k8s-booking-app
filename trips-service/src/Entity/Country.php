@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Entiy;
+namespace App\Entity;
 
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
