@@ -16,9 +16,13 @@ spec:
         job: trips-service-migrate
     spec:
       restartPolicy: Never
+      initContainers:
+        - name: wait-for-db
+          image: busybox
+          command: ['sh', '-c', 'until nc -z trips-service-db-srv 3306; do echo waiting for db; sleep 2; done']
       containers:
       - name: migrate
-        image: docker.io/rvanappeldorn/trips-service:latest
+        image: docker.io/rvanappeldorn/trips-service
         imagePullPolicy: Never
         env:
           - name: POD_NAMESPACE
@@ -31,12 +35,15 @@ spec:
           - name: DB_PASSWORD
             valueFrom:
               secretKeyRef: { name: trips-db-credentials, key: password }
-          - name: DATABASE_URL
-            value: mariadb+pymysql://$(DB_USER):$(DB_PASSWORD)@trips-service-db-srv.$(POD_NAMESPACE).svc.cluster.local:3306/trips?charset=utf8mb4
+          - name: DB_NAME
+            value: "trips"
+          - name: DB_PORT
+            value: "3306"
+          - name: DB_HOST
+            value: trips-service-db-srv
         command: ["sh", "-c"]
         args:
           - |
-            set -e
-            echo "Running Alembic migrations..."
+            echo "Running Doctrine migrations..."
             php bin/console doctrine:migrations:migrate
             echo "✅ Migrations complete"

@@ -41,8 +41,12 @@ spec:
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef: { name: trips-db-credentials, key: password }
-            - name: DATABASE_URL
-              value: mariadb+pymysql://$(DB_USER):$(DB_PASSWORD)@trips-service-db-srv.$(POD_NAMESPACE).svc.cluster.local:3306/trips?charset=utf8mb4
+            - name: DB_NAME
+              value: "trips"
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_HOST
+              value: trips-service-db-srv
           ports:
             - containerPort: 9000
         - name: trip-service-nginx
