@@ -38,12 +38,33 @@ services:
       - accounts-service-db
     ports:
       - 8000:8000
+
+  trips-service-db:
+    image: mariadb:12.0.2
+    restart: always
+    environment:
+      - MARIADB_DATABASE=trips
+      - MARIADB_USER=dev
+      - MARIADB_PASSWORD=password
+      - MARIADB_ROOT_PASSWORD=root
+    ports:
+      - 3307:3306
   trips-service-php:
     build:
       context: trips-service/
       dockerfile: Dockerfile
     user: "${USER_UID}:${GID}"   
     restart: always
+    environment:
+      - DB_NAME=trips
+      - DB_PORT=3306
+      - DB_HOST=tris-service-db
+      - DB_USER=dev
+      - DB_PASSWORD=password
+    depends_on:
+      - trips-service-db
+    volumes:
+      - ./trips-service/migrations:/var/www/html/migrations
   trips-service-nginx:
     image: nginx:1.27-alpine
     environment:
