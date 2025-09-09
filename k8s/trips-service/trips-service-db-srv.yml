@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: trips-service-db-srv
+  labels:
+    app: trips-service-db
+  namespace: staging-ns
+spec:
+  type: ClusterIP
+  selector:
+    app: trips-service-db
+  ports:
+    - name: http
+      port: 3306
+      targetPort: 3306

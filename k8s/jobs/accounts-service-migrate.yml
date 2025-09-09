@@ -16,15 +16,15 @@ spec:
         job: accounts-service-migrate
     spec:
       restartPolicy: Never
+      initContainers:
+        - name: wait-for-db
+          image: busybox
+          command: ['sh', '-c', 'until nc -z accounts-service-db-srv 3306; do echo waiting for db; sleep 2; done']
       containers:
       - name: migrate
         image: docker.io/rvanappeldorn/accounts-service-fast-api:latest
         imagePullPolicy: Never
         env:
-          - name: POD_NAMESPACE
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.namespace
           - name: DB_USER
             valueFrom:
               secretKeyRef: { name: accounts-db-credentials, key: user }
@@ -32,7 +32,7 @@ spec:
             valueFrom:
               secretKeyRef: { name: accounts-db-credentials, key: password }
           - name: DATABASE_URL
-            value: mariadb+pymysql://$(DB_USER):$(DB_PASSWORD)@accounts-service-db-srv.$(POD_NAMESPACE).svc.cluster.local:3306/accounts?charset=utf8mb4
+            value: mariadb+pymysql://$(DB_USER):$(DB_PASSWORD)@accounts-service-db-srv:3306/accounts?charset=utf8mb4
           - name: SMTP_PORT
             value: "1025"
           - name: SMTP_HOST
