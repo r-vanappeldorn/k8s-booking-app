@@ -6,7 +6,7 @@ from src.utils.auth import decode_token
 import os
 
 SMTP_HOST = os.getenv("SMTP_HOST")
-SMTP_PORT = int(os.getenv("SMTP_PORT"))
+SMTP_PORT = int(os.getenv("SMTP_PORT", ""))
 SMTP_USER = os.getenv("SMTP_USER", "")
 SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", "")
 FROM_EMAIL = os.getenv("FROM_EMAIL")
@@ -39,6 +39,9 @@ def send_verification_email(to: str, username: str, token: str):
 
     msg.set_content(f"Hi {username}, verify your e-mail through: {link}")
     msg.add_alternative(content, subtype="html")
+
+    if not SMTP_HOST or not SMTP_PORT:
+        return
 
     with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as s:
         if SMTP_USER and SMTP_PASSWORD:

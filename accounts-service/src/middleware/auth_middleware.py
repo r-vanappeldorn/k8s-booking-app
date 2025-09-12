@@ -37,8 +37,12 @@ async def get_current_user(
             detail="Invalid or expired token",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    
-    user_id = int(payload.get("sub"))
+
+    sub = payload.get("sub")
+    if not sub:
+        raise BadRequest("INVALID_SUB", "Token is invalid")
+
+    user_id = int(sub)
     user = user_repository.get_user_by_id(user_id)
     if not user:
         raise HTTPException(
