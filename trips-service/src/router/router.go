@@ -15,10 +15,10 @@ type Router struct {
 
 type HandlerFunc func(http.ResponseWriter, *http.Request, *config.Env)
 
-func (r *Router) Get(patern string, handler HandlerFunc) {
+func (r *Router) Handle(patern string, handler HandlerFunc, method string) {
 	r.HandleFunc(patern, func(w http.ResponseWriter, req *http.Request) {
-		if req.Method != http.MethodGet {
-			http.Error(w, "Invalid method used on route", http.StatusBadRequest)
+		if req.Method != method {
+			http.Error(w, "Invalid method used on route", http.StatusNotFound)
 			return
 		}
 
@@ -26,30 +26,24 @@ func (r *Router) Get(patern string, handler HandlerFunc) {
 
 		handler(w, req, r.Env)
 	})
+}
+
+func (r *Router) Get(patern string, handler HandlerFunc) {
+	r.Handle(patern, handler, http.MethodGet)
 }
 
 func (r *Router) Post(patern string, handler HandlerFunc) {
-	r.HandleFunc(patern, func(w http.ResponseWriter, req *http.Request) {
-		if req.Method != http.MethodPost {
-			http.Error(w, "Invalid method used on route", http.StatusBadRequest)
-			return
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-
-		handler(w, req, r.Env)
-	})
+	r.Handle(patern, handler, http.MethodPost)
 }
 
 func (r *Router) Put(patern string, handler HandlerFunc) {
-	r.HandleFunc(patern, func(w http.ResponseWriter, req *http.Request) {
-		if req.Method != http.MethodPut {
-			http.Error(w, "Invalid method used on route", http.StatusBadRequest)
-			return
-		}
+	r.Handle(patern, handler, http.MethodPut)
+}
 
-		w.Header().Set("Content-Type", "application/json")
+func (r *Router) Patch(patern string, handler HandlerFunc) {
+	r.Handle(patern, handler, http.MethodPatch)
+}
 
-		handler(w, req, r.Env)
-	})
+func (r *Router) Delete(patern string, handler HandlerFunc) {
+	r.Handle(patern, handler, http.MethodDelete)
 }
