@@ -31,3 +31,16 @@ func TestHealthRoute(t *testing.T) {
 		t.Fatalf("expected status to contain string 'ok', got: %s", res["status"])
 	}
 }
+
+func TestHealthRouteMethod(t *testing.T) {
+	env := &config.Env{}
+	r := router.Init(env)
+	req := httptest.NewRequest(http.MethodPost, "/api/trips/health", nil)
+	w := httptest.NewRecorder()
+
+	r.ServeHTTP(w, req)
+
+	if w.Code != http.StatusNotFound {
+		t.Fatalf("expected 404 not found, got: %d", w.Code)
+	}
+}
