@@ -19,3 +19,6 @@ migrate-accounts-service: ## Migrates accounts service in staging namespace
 
 dev: ## Build and run docker compose
 	docker compose build && docker compose up
+
+trips-service-local:
+		go build ./trips-service/ && ./trips-service/trips-service.com

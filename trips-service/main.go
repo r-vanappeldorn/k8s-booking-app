@@ -20,9 +20,8 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
+	
 	r := router.Init(env)
-
 	srv, cancelCtx, err := server.Init(r)
 	if err != nil {
 		log.Fatal(err)

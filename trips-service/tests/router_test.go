@@ -1,7 +1,9 @@
 package tests
 
 import (
+	"bytes"
 	"encoding/json"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -12,6 +14,7 @@ import (
 
 func TestHealthRoute(t *testing.T) {
 	env := &config.Env{}
+
 	r := router.Init(env)
 	req := httptest.NewRequest(http.MethodGet, "/api/trips/health", nil)
 	w := httptest.NewRecorder()
@@ -34,7 +37,11 @@ func TestHealthRoute(t *testing.T) {
 
 func TestHealthRouteMethod(t *testing.T) {
 	env := &config.Env{}
+
+	var buff bytes.Buffer
+	logger := log.New(&buff, "test", log.LstdFlags)
 	r := router.Init(env)
+
 	req := httptest.NewRequest(http.MethodPost, "/api/trips/health", nil)
 	w := httptest.NewRecorder()
 
