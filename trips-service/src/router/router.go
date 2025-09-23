@@ -2,33 +2,38 @@
 package router
 
 import (
+	"database/sql"
 	"log/slog"
 	"net/http"
 
 	"trips-service.com/src/config"
-	"trips-service.com/src/server"
 )
 
-type Router struct {
-	*server.PrefixMux
-	Env    *config.Env
+type Conext struct {
+	env    *config.Env
 	logger *slog.Logger
+	conn   *sql.DB
 }
 
-type HandlerFunc func(http.ResponseWriter, *http.Request, *config.Env)
+type Router struct {
+	*PrefixMux
+	ctx    *Conext
+}
+
+type HandlerFunc func(http.ResponseWriter, *http.Request, *Conext)
 
 func (r *Router) Handle(patern string, handler HandlerFunc, method string) {
 	r.HandleFunc(patern, func(w http.ResponseWriter, req *http.Request) {
-		r.logger.Info("route hit", "method", method, "path", req.URL.Path)
+		r.ctx.logger.Info("route hit", "method", method, "path", req.URL.Path)
 		if req.Method != method {
-			r.logger.Error("route not found", "method", method, "path", req.URL.Path)
+			r.ctx.logger.Error("route not found", "method", method, "path", req.URL.Path)
 			http.Error(w, "Invalid method used on route", http.StatusNotFound)
 			return
 		}
 
 		w.Header().Set("Content-Type", "application/json")
 
-		handler(w, req, r.Env)
+		handler(w, req, r.ctx)
 	})
 }
 

@@ -3,18 +3,24 @@ package server
 
 import (
 	"context"
+	"database/sql"
 	"net"
 	"net/http"
 
 	"trips-service.com/src/config"
+	"trips-service.com/src/controllers"
+	"trips-service.com/src/router"
 )
 
-func Init(router http.Handler, env *config.Env) (*http.Server, context.CancelFunc, error) {
+func Init(env *config.Env, conn *sql.DB) (*http.Server, context.CancelFunc, error) {
 	ctx, cancelCtx := context.WithCancel(context.Background())
+
+	r := router.Init(env, conn)
+	controllers.Init(r)
 
 	srv := &http.Server{
 		Addr:    ":80",
-		Handler: router,
+		Handler: r.Mux,
 
 		BaseContext: func(l net.Listener) context.Context {
 			return context.WithValue(ctx, env.ServerName, l.Addr())
