@@ -14,10 +14,10 @@ build:
         dockerfile: Dockerfile
       sync:                      
         manual:
-          - src: "src/**/*.php"
+          - src: "src/**/*.go"
             dest: "/app/src"
-          - src: "composer.json"
-            dest: "/app/composer.json"
+          - src: "go.mod"
+            dest: "/app/go.mod"
     - image: docker.io/rvanappeldorn/accounts-service-fast-api
       context: accounts-service
       docker:
