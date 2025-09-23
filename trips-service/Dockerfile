@@ -8,4 +8,8 @@ RUN go mod download
 
 COPY . .
 
-CMD ["/cmd/trips-service"]
+RUN go build -o ./cmd/trips-service/app
+
+EXPOSE 80
+
+CMD ["./cmd/trips-service/app"]

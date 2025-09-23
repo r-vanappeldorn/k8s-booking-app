@@ -22,7 +22,7 @@ func main() {
 	}
 	
 	r := router.Init(env)
-	srv, cancelCtx, err := server.Init(r)
+	srv, cancelCtx, err := server.Init(r, env)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -38,7 +38,7 @@ func main() {
 		errCh <- nil
 	}()
 
-	log.Printf("Server started on port: %d", env.Port)
+	log.Println("Server started on port: 80")
 
 	select {
 	case <-signCtx.Done():
