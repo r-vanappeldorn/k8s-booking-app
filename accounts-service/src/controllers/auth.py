@@ -68,8 +68,12 @@ def verify_email(token: str, user_repository: UserRepository = Depends(get_user_
     
     if payload.get("purpose") != JWT_VERIFY_EMAIL:
         raise BadRequest("INVALID_PURPOSE", "Verify link is invalid or expired")
+
+    sub = payload.get("sub")
+    if not sub:
+        raise BadRequest("INVALID_SUB", "Verify link is invalid")
     
-    user_id = int(payload.get("sub"))
+    user_id = int(sub)
     user_repository.verify_email_by_user_id(user_id)
 
     url = f"{os.environ["BASE_URL"]}/singin"

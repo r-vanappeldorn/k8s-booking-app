@@ -37,6 +37,9 @@ class UserRepository:
 
     def verify_email_by_user_id(self, user_id: int):
         user = self._db.query(User).filter(User.user_id == user_id).first()
+        if not user:
+            return
+
         user.is_email_verified = True
         self._db.commit()
 

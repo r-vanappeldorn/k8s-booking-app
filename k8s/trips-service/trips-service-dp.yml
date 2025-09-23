@@ -16,7 +16,7 @@ spec:
         app: trips-service
     spec:
       containers:
-        - name: trips-service-php
+        - name: trips-service
           image: docker.io/rvanappeldorn/trips-service:latest
           imagePullPolicy: Never
           resources:
@@ -39,28 +39,7 @@ spec:
                 secretKeyRef: { name: trips-db-credentials, key: password }
             - name: DATABASE_URL
               value: mariadb+pymysql://$(DB_USER):$(DB_PASSWORD)@trips-service-db-srv.$(POD_NAMESPACE).svc.cluster.local:3306/accounts?charset=utf8mb4
+            - name: SERVER_NAME
+              value: trips-service
           ports:
-            - containerPort: 9000
-        - name: trip-service-nginx
-          image: nginx:1.27-alpine
-          ports: 
-            - containerPort: 80 
-          volumeMounts:
-            - name: webroot
-              mountPath: /var/www/html:ro
-            - name: nginx
-              mountPath: /etc/nginx/conf.d/default.conf
-              subPath: default.conf
-          readinessProbe:
-            tcpSocket: { port: 9000 }
-            initialDelaySeconds: 3
-            periodSeconds: 5
-          resources:
-            requests: { cpu: "50m", memory: "64Mi" }
-            limits:   { cpu: "200m", memory: "256Mi" }
-      volumes:
-        - name: webroot
-          emptyDir: {}
-        - name: nginx
-          configMap:
-            name: trips-service-nginx-conf
+            - containerPort: 80

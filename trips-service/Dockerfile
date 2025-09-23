@@ -1,39 +1,15 @@
-FROM composer:2 AS composer_builder
-
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+FROM golang:1.25.1
 
 WORKDIR /app
 
-COPY composer.json composer.lock ./
+COPY go.mod ./ 
 
-RUN composer install --prefer-dist --no-progress --no-interaction --no-scripts
+RUN go mod download
 
-FROM php:8.3-fpm-alpine AS runtime
-
-RUN apk add --no-cache \
-    icu-dev libzip-dev oniguruma-dev \
-    zlib-dev libpng-dev libjpeg-turbo-dev libxml2-dev \
-    bash git curl tzdata
-
-RUN docker-php-ext-configure gd --with-jpeg \
- && docker-php-ext-install -j$(nproc) \
-      intl \
-      pdo_mysql \
-      opcache \
-      zip \
-      mbstring \
-      gd \
-      xml
-
-WORKDIR /var/www/html
-
-COPY --from=composer_builder /app/vendor ./vendor
 COPY . .
 
-EXPOSE 9000
+RUN go build -o ./cmd/trips-service/app
 
-HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
-  CMD php -v || exit 1
+EXPOSE 80
 
-CMD ["php-fpm"]
-
+CMD ["./cmd/trips-service/app"]
