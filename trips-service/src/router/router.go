@@ -2,6 +2,7 @@
 package router
 
 import (
+	"database/sql"
 	"log/slog"
 	"net/http"
 
@@ -11,11 +12,12 @@ import (
 
 type Router struct {
 	*server.PrefixMux
-	Env    *config.Env
+	env    *config.Env
 	logger *slog.Logger
+	conn   *sql.DB
 }
 
-type HandlerFunc func(http.ResponseWriter, *http.Request, *config.Env)
+type HandlerFunc func(http.ResponseWriter, *http.Request, *config.Env, *sql.DB)
 
 func (r *Router) Handle(patern string, handler HandlerFunc, method string) {
 	r.HandleFunc(patern, func(w http.ResponseWriter, req *http.Request) {
@@ -28,7 +30,7 @@ func (r *Router) Handle(patern string, handler HandlerFunc, method string) {
 
 		w.Header().Set("Content-Type", "application/json")
 
-		handler(w, req, r.Env)
+		handler(w, req, r.env, r.conn)
 	})
 }
 

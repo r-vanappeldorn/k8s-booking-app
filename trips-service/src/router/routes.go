@@ -1,6 +1,7 @@
 package router
 
 import (
+	"database/sql"
 	"encoding/json"
 	"log/slog"
 	"net/http"
@@ -10,7 +11,7 @@ import (
 	"trips-service.com/src/server"
 )
 
-func Init(env *config.Env) http.Handler {
+func Init(env *config.Env, conn *sql.DB) http.Handler {
 	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
 
 	mux := http.NewServeMux()
@@ -29,14 +30,14 @@ func Init(env *config.Env) http.Handler {
 		mux,
 	)
 
-
 	router := &Router{
 		prefixMux,
 		env, 
 		logger,
+		conn,
 	}
 
-	router.Get("/health", func(w http.ResponseWriter, r *http.Request, env *config.Env) {
+	router.Get("/health", func(w http.ResponseWriter, r *http.Request, env *config.Env, _ *sql.DB) {
 		json.NewEncoder(w).Encode(map[string]string{
 			"status": "ok",
 		})

@@ -6,6 +6,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/DATA-DOG/go-sqlmock"
 	"trips-service.com/src/config"
 	"trips-service.com/src/router"
 )
@@ -13,7 +14,12 @@ import (
 func TestHealthRoute(t *testing.T) {
 	env := &config.Env{}
 
-	r := router.Init(env)
+	conn, _, err := sqlmock.New()
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer conn.Close()
+	r := router.Init(env, conn)
 	req := httptest.NewRequest(http.MethodGet, "/api/trips/health", nil)
 	w := httptest.NewRecorder()
 
@@ -35,8 +41,13 @@ func TestHealthRoute(t *testing.T) {
 
 func TestHealthRouteMethod(t *testing.T) {
 	env := &config.Env{}
+	conn, _, err := sqlmock.New()
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer conn.Close()
 
-	r := router.Init(env)
+	r := router.Init(env, conn)
 
 	req := httptest.NewRequest(http.MethodPost, "/api/trips/health", nil)
 	w := httptest.NewRecorder()
