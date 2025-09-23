@@ -30,14 +30,18 @@ func Init(env *config.Env, conn *sql.DB) http.Handler {
 		mux,
 	)
 
-	router := &Router{
-		prefixMux,
+	ctx := &Conext{
 		env, 
 		logger,
 		conn,
 	}
 
-	router.Get("/health", func(w http.ResponseWriter, r *http.Request, env *config.Env, _ *sql.DB) {
+	router := &Router{
+		prefixMux,
+		ctx,
+	}
+
+	router.Get("/health", func(w http.ResponseWriter, r *http.Request, _ *Conext) {
 		json.NewEncoder(w).Encode(map[string]string{
 			"status": "ok",
 		})
