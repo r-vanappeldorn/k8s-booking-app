@@ -20,7 +20,7 @@ func (c *HealthController) Mount(r *router.Router) {
 	r.Get("/health", c.Health)
 }
 
-func (c *HealthController) Health(w http.ResponseWriter, r *http.Request, ctx *router.Conext) {
+func (c *HealthController) Health(w http.ResponseWriter, r *http.Request, cxt *router.Conext) {
 	json.NewEncoder(w).Encode(map[string]string{
 		"status": "ok",
 	})

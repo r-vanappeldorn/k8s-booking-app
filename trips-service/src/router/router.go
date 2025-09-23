@@ -7,7 +7,6 @@ import (
 	"net/http"
 
 	"trips-service.com/src/config"
-	"trips-service.com/src/server"
 )
 
 type Conext struct {
@@ -17,7 +16,7 @@ type Conext struct {
 }
 
 type Router struct {
-	*server.PrefixMux
+	*PrefixMux
 	ctx    *Conext
 }
 

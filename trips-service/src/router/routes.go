@@ -8,10 +8,9 @@ import (
 	"os"
 
 	"trips-service.com/src/config"
-	"trips-service.com/src/server"
 )
 
-func Init(env *config.Env, conn *sql.DB) http.Handler {
+func Init(env *config.Env, conn *sql.DB) *Router {
 	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
 
 	mux := http.NewServeMux()
@@ -25,7 +24,7 @@ func Init(env *config.Env, conn *sql.DB) http.Handler {
 		json.NewEncoder(w).Encode(res)
 	})
 
-	prefixMux := server.NewPrefixMux(
+	prefixMux := NewPrefixMux(
 		"/api/trips",
 		mux,
 	)
@@ -36,16 +35,8 @@ func Init(env *config.Env, conn *sql.DB) http.Handler {
 		conn,
 	}
 
-	router := &Router{
+	return &Router{
 		prefixMux,
 		ctx,
 	}
-
-	router.Get("/health", func(w http.ResponseWriter, r *http.Request, _ *Conext) {
-		json.NewEncoder(w).Encode(map[string]string{
-			"status": "ok",
-		})
-	})
-
-	return router.Mux
 }

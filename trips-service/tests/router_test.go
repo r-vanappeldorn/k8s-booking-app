@@ -8,22 +8,31 @@ import (
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"trips-service.com/src/config"
-	"trips-service.com/src/router"
+	"trips-service.com/src/server"
 )
 
-func TestHealthRoute(t *testing.T) {
+func initTestServer() (*http.Server, sqlmock.Sqlmock, func() error, error) {
 	env := &config.Env{}
 
-	conn, _, err := sqlmock.New()
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer conn.Close()
-	r := router.Init(env, conn)
+	conn, mock, err := sqlmock.New()
+
+	srv, _, err := server.Init(env, conn)
+
+	return srv, mock, conn.Close, err
+}
+
+func TestHealthRoute(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "/api/trips/health", nil)
 	w := httptest.NewRecorder()
 
-	r.ServeHTTP(w, req)
+	srv, _, close, err := initTestServer()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	defer close()
+
+	srv.Handler.ServeHTTP(w, req)
 
 	if w.Code != http.StatusOK {
 		t.Fatalf("expected 200 ok, got: %d", w.Code)
@@ -40,19 +49,17 @@ func TestHealthRoute(t *testing.T) {
 }
 
 func TestHealthRouteMethod(t *testing.T) {
-	env := &config.Env{}
-	conn, _, err := sqlmock.New()
+	srv, _, close, err := initTestServer()
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer conn.Close()
 
-	r := router.Init(env, conn)
+	defer close()
 
 	req := httptest.NewRequest(http.MethodPost, "/api/trips/health", nil)
 	w := httptest.NewRecorder()
 
-	r.ServeHTTP(w, req)
+	srv.Handler.ServeHTTP(w, req)
 
 	if w.Code != http.StatusNotFound {
 		t.Fatalf("expected 404 not found, got: %d", w.Code)

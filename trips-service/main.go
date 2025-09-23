@@ -12,7 +12,6 @@ import (
 
 	"trips-service.com/src/config"
 	"trips-service.com/src/database"
-	"trips-service.com/src/router"
 	"trips-service.com/src/server"
 )
 
@@ -28,8 +27,7 @@ func main() {
 	}
 	defer conn.Close()
 	
-	r := router.Init(env, conn)
-	srv, cancelCtx, err := server.Init(r, env)
+	srv, cancelCtx, err := server.Init(env, conn)
 	if err != nil {
 		log.Fatal(err)
 	}
