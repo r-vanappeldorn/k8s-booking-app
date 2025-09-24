@@ -1,16 +1,16 @@
 package router
 
 import (
-	"database/sql"
 	"encoding/json"
 	"log/slog"
 	"net/http"
 	"os"
 
+	"gorm.io/gorm"
 	"trips-service.com/src/config"
 )
 
-func Init(env *config.Env, conn *sql.DB) *Router {
+func Init(env *config.Env, gormDB *gorm.DB) *Router {
 	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
 
 	mux := http.NewServeMux()
@@ -32,7 +32,7 @@ func Init(env *config.Env, conn *sql.DB) *Router {
 	ctx := &Conext{
 		env, 
 		logger,
-		conn,
+		gormDB,
 	}
 
 	return &Router{

@@ -2,17 +2,17 @@
 package router
 
 import (
-	"database/sql"
 	"log/slog"
 	"net/http"
 
+	"gorm.io/gorm"
 	"trips-service.com/src/config"
 )
 
 type Conext struct {
-	env    *config.Env
-	logger *slog.Logger
-	conn   *sql.DB
+	env      *config.Env
+	logger   *slog.Logger
+	gormDB   *gorm.DB
 }
 
 type Router struct {

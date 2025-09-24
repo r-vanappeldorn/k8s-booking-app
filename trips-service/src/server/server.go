@@ -3,19 +3,19 @@ package server
 
 import (
 	"context"
-	"database/sql"
 	"net"
 	"net/http"
 
+	"gorm.io/gorm"
 	"trips-service.com/src/config"
 	"trips-service.com/src/controllers"
 	"trips-service.com/src/router"
 )
 
-func Init(env *config.Env, conn *sql.DB) (*http.Server, context.CancelFunc, error) {
+func Init(env *config.Env, gormDB *gorm.DB) (*http.Server, context.CancelFunc, error) {
 	ctx, cancelCtx := context.WithCancel(context.Background())
 
-	r := router.Init(env, conn)
+	r := router.Init(env, gormDB)
 	controllers.Init(r)
 
 	srv := &http.Server{

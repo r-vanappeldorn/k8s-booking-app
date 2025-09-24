@@ -10,6 +10,8 @@ import (
 	"syscall"
 	"time"
 
+  "gorm.io/driver/mysql"
+	"gorm.io/gorm"
 	"trips-service.com/src/config"
 	"trips-service.com/src/database"
 	"trips-service.com/src/server"
@@ -21,13 +23,22 @@ func main() {
 		log.Fatal(err)
 	}
 
-	conn, err := database.Init(env)
+	sqlDB, err := database.Init(env)
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer conn.Close()
+	defer sqlDB.Close()
+
+	gormDB , err := gorm.Open(mysql.New(
+		mysql.Config{
+			Conn: sqlDB,
+		},
+	), &gorm.Config{})
+	if err != nil {
+		log.Fatal(err)
+	}
 	
-	srv, cancelCtx, err := server.Init(env, conn)
+	srv, cancelCtx, err := server.Init(env, gormDB)
 	if err != nil {
 		log.Fatal(err)
 	}

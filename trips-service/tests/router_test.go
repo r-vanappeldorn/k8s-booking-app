@@ -7,6 +7,8 @@ import (
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 	"trips-service.com/src/config"
 	"trips-service.com/src/server"
 )
@@ -14,11 +16,20 @@ import (
 func initTestServer() (*http.Server, sqlmock.Sqlmock, func() error, error) {
 	env := &config.Env{}
 
-	conn, mock, err := sqlmock.New()
+	sqlDB, mock, err := sqlmock.New()
 
-	srv, _, err := server.Init(env, conn)
+	gormDB , err := gorm.Open(mysql.New(
+		mysql.Config{
+			Conn: sqlDB,
+		},
+	), &gorm.Config{})
+	if err != nil {
+		return nil, nil, nil, err
+	}
 
-	return srv, mock, conn.Close, err
+	srv, _, err := server.Init(env, gormDB)
+
+	return srv, mock, sqlDB.Close, err
 }
 
 func TestHealthRoute(t *testing.T) {
