@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: trips-service-db-state
+  namespace: staging-ns
+spec:
+  serviceName: trips-service-db-srv
+  replicas: 1
+  selector:
+    matchLabels:
+      app: trips-service-db
+  template:
+    metadata:
+      labels:
+        app: trips-service-db
+    spec:
+      containers:
+        - name: mariadb
+          image: mariadb:12.0.2
+          env:
+            - name: MARIADB_DATABASE
+              value: trips
+            - name: MARIADB_USER
+              valueFrom:
+                secretKeyRef: { name: trips-db-credentials, key: user }
+            - name: MARIADB_PASSWORD
+              valueFrom:
+                secretKeyRef: { name: trips-db-credentials, key: password }
+            - name: MARIADB_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef: { name: trips-db-credentials, key: rootPassword }
+          readinessProbe:
+            tcpSocket: { port: 3306 }
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            tcpSocket: { port: 3306 }
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/mysql
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 10Gi
