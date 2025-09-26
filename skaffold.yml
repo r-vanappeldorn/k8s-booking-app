@@ -11,8 +11,18 @@ build:
     - image: docker.io/rvanappeldorn/trips-service
       context: trips-service
       docker:
-        dockerfile: Dockerfile
-      sync:                      
+        dockerfile: Dockerfile.app
+      sync:
+        manual:
+          - src: "src/**/*.go"
+            dest: "/app/src"
+          - src: "go.mod"
+            dest: "/app/go.mod"
+    - image: docker.io/rvanappeldorn/trips-service-migrate
+      context: trips-service
+      docker:
+        dockerfile: Dockerfile.migrate
+      sync:
         manual:
           - src: "src/**/*.go"
             dest: "/app/src"
@@ -22,7 +32,7 @@ build:
       context: accounts-service
       docker:
         dockerfile: Dockerfile
-      sync:                      
+      sync:
         manual:
           - src: "src/**/*.py"
             dest: "/app/src"
@@ -37,15 +47,16 @@ manifests:
     - k8s/trips-service/*.yml
     - k8s/ingress/*.yml
     - k8s/mailhog/*.yml
+    - k8s/jobs/*.yml
 
 profiles:
   - name: minikube
     build:
       local:
         push: false
-        tryImportMissing: true     
+        tryImportMissing: true
     patches:
       - op: replace
         path: /portForward/0/namespace
-        value: staging-ns          
+        value: staging-ns
   - name: debug

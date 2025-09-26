@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: trips-service-migrate
+  namespace: staging-ns
+  labels:
+    app: trips-service
+    job: trips-service-migrate
+spec:
+  backoffLimit: 3
+  ttlSecondsAfterFinished: 300
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: migrate
+          image: docker.io/rvanappeldorn/trips-service-migrate:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef: { name: trips-db-credentials, key: user }
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef: { name: trips-db-credentials, key: password }
+          args: ["up"]
+

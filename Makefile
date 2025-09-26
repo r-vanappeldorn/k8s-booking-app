@@ -20,5 +20,26 @@ migrate-accounts-service: ## Migrates accounts service in staging namespace
 dev: ## Build and run docker compose
 	docker compose build && docker compose up
 
-trips-service-local:
-		go build ./trips-service/ && ./trips-service/trips-service.com
+mycli-accounts-db: ## Open mycli with accounts-service database
+	@if ! lsof -i :3307 >/dev/null; then \
+		echo "Starting port-forward 3307 -> 3306..."; \
+		kubectl -n staging-ns port-forward svc/accounts-service-db-srv 3307:3306 >/tmp/trips-db-pf.log 2>&1 & \
+		sleep 2; \
+	else \
+		echo "Port-forward already running on 3307"; \
+	fi; \
+	mycli -u $$(kubectl get secret accounts-db-credentials -n staging-ns -o jsonpath='{.data.user}' | base64 -d) \
+	      -p $$(kubectl get secret accounts-db-credentials -n staging-ns -o jsonpath='{.data.password}' | base64 -d) \
+	      -h 127.0.0.1 -P 3307 accounts
+
+mycli-trips-db: ## Open mycli with trips-service database
+	@if ! lsof -i :3308 >/dev/null; then \
+		echo "Starting port-forward 3308 -> 3306..."; \
+		kubectl -n staging-ns port-forward svc/trips-service-db-srv 3308:3306 >/tmp/trips-db-pf.log 2>&1 & \
+		sleep 2; \
+	else \
+		echo "Port-forward already running on 3308"; \
+	fi; \
+	mycli -u $$(kubectl get secret trips-db-credentials -n staging-ns -o jsonpath='{.data.user}' | base64 -d) \
+	      -p $$(kubectl get secret trips-db-credentials -n staging-ns -o jsonpath='{.data.password}' | base64 -d) \
+	      -h 127.0.0.1 -P 3308 trips
