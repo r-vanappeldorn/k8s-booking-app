@@ -25,10 +25,11 @@ type Trip struct {
 	Status         TripStatus     `gorm:"type:ENUM('draft','published','archived');default:'draft';not null;index"`
 	Capacity       int            `gorm:"not null"`
 	BasePriceCents int            `gorm:"not null"`
-	Currency       string         `gorm:"type: char(3),not null"`
-	Location       Location       `gorm:"foreignKey:LocationID;constraint:OnUpdate:RESTRICT,OnDelete:RESTRICT"`
+	Currency       string         `gorm:"type:char(3);not null"`
+	LocationID     uint           `gorm:"not null;index"`
+	Location       Location       `gorm:"foreignKey:LocationID;references:ID;constraint:OnUpdate:RESTRICT;OnDelete:RESTRICT"`
 	CreatedAt      time.Time      `gorm:"not null;default:CURRENT_TIMESTAMP;index"`
-	UpdatedAt      time.Time      `gorm:"not null;default:CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP"`
+	UpdatedAt      time.Time      `gorm:"not null;default:CURRENT_TIMESTAMP;OnUpdate:CURRENT_TIMESTAMP"`
 	DeletedAt      gorm.DeletedAt `gorm:"index"`
 }
 
