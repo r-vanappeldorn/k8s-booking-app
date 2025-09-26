@@ -1,0 +1,13 @@
+FROM golang:1.25.1 AS build
+
+WORKDIR /app
+
+COPY . .
+
+RUN CGO_ENABLED=0 go build -o /out/migrate ./cmd/migrate
+
+FROM gcr.io/distroless/base-debian12
+
+COPY --from=build /out/migrate /usr/local/bin/migrate
+ENTRYPOINT ["/usr/local/bin/migrate"]
+CMD ["up"]

@@ -8,17 +8,11 @@ import (
 )
 
 type Env struct {
-	ServerName string
-	DbUser string
-	DbPassword string
+	DBUser     string
+	DBPassword string
 }
 
 func InitEnv() (*Env, error) {
-	serverName := os.Getenv("SERVER_NAME")
-	if serverName == "" {
-		return nil, errors.NewEnvError("SERVER_NAME")
-	}
-
 	dbUser := os.Getenv("DB_USER")
 	if dbUser == "" {
 		return nil, errors.NewEnvError("DB_USER")
@@ -30,8 +24,7 @@ func InitEnv() (*Env, error) {
 	}
 
 	return &Env{
-		ServerName: serverName,
-		DbUser: dbUser,
-		DbPassword: dbPassword,
+		DBUser:     dbUser,
+		DBPassword: dbPassword,
 	}, nil
 }

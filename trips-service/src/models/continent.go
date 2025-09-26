@@ -14,3 +14,7 @@ type Continent struct {
 	UpdatedAt time.Time      `gorm:"not null;default:CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP"`
 	DeletedAt gorm.DeletedAt `gorm:"index"`
 }
+
+func (c *Continent) TableName() string {
+	return "continent"
+}

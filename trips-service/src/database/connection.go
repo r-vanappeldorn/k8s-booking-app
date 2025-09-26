@@ -12,7 +12,15 @@ import (
 )
 
 func Init(env *config.Env) (*sql.DB, error) {
-	sqlDB, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(accounts-service-db-srv.staging-ns.svc.cluster.local:3306)/trips", env.DbUser, env.DbPassword))
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true&charset=utf8mb4&loc=Local",
+		env.DBUser,
+		env.DBPassword,
+		"trips-service-db-srv.staging-ns.svc.cluster.local",
+		"3306",
+		"trips",
+	)
+
+	sqlDB, err := sql.Open("mysql", dsn)
 	if err != nil {
 		return nil, fmt.Errorf("unable to create db connection: %w", err)
 	}

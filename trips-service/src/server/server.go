@@ -23,7 +23,7 @@ func Init(env *config.Env, gormDB *gorm.DB) (*http.Server, context.CancelFunc, e
 		Handler: r.Mux,
 
 		BaseContext: func(l net.Listener) context.Context {
-			return context.WithValue(ctx, env.ServerName, l.Addr())
+			return context.WithValue(ctx, "trips-service", l.Addr())
 		},
 	}
 
