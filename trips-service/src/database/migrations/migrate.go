@@ -9,6 +9,9 @@ import (
 func Migrations() []*gormigrate.Migration {
 	return []*gormigrate.Migration{
 		migratiom0001CreateContinentTable(),
+		migratiom0002CreateCountryTable(),
+		migratiom0003CreateLocationTable(),
+		migratiom0004CreateTripTable(),
 	}
 }
 
