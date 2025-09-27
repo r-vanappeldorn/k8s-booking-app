@@ -7,7 +7,7 @@ import (
 	"net/http"
 
 	"github.com/go-playground/validator/v10"
-	"gorm.io/gorm"
+	"github.com/go-sql-driver/mysql"
 	"trips-service.com/src/models"
 	"trips-service.com/src/router"
 )
@@ -79,7 +79,8 @@ func (c *ContinentController) Create(w http.ResponseWriter, req *http.Request, c
 	}
 
 	err := ctx.GormDB.Create(continent).Error
-	if err != nil && errors.Is(err, gorm.ErrDuplicatedKey) {
+	var mysqlErr *mysql.MySQLError
+	if err != nil && errors.As(err, &mysqlErr) && mysqlErr.Number == 1062 {
 		w.WriteHeader(http.StatusBadRequest)
 		res := []CreateValidationErrorResponse{
 			{

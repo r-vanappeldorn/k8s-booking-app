@@ -1,4 +1,4 @@
-// Package  testutils
+// Package testutils:
 package testutils
 
 import (

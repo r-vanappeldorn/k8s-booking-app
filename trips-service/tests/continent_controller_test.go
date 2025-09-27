@@ -3,13 +3,14 @@ package tests
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/go-sql-driver/mysql"
 	"github.com/stretchr/testify/assert"
-	"gorm.io/gorm"
 	testutils "trips-service.com/test_utils"
 )
 
@@ -86,10 +87,12 @@ func TestCreateContinentAlreadyExistsInDB(t *testing.T) {
 	ctx.Mock.ExpectBegin()
 	ctx.Mock.ExpectExec(`INSERT INTO .*continent.*\(.*code.*,.*name.*,.*deleted_at.*\) VALUES \(\?,\?\,\?\)`).
 		WithArgs("NL", "The Netherlands", nil).
-		WillReturnError(gorm.ErrDuplicatedKey)
+		WillReturnError(&mysql.MySQLError{Number: 1062, Message: "Duplicate entry 'NL' for key 'continent.code'"})
 	ctx.Mock.ExpectRollback()
 
 	srv.Handler.ServeHTTP(w, req)
+
+	fmt.Printf("%+v\n", w.Body)
 
 	var res []map[string]string
 	json.Unmarshal(w.Body.Bytes(), &res)
