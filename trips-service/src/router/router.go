@@ -5,28 +5,30 @@ import (
 	"log/slog"
 	"net/http"
 
+	"github.com/go-playground/validator/v10"
 	"gorm.io/gorm"
 	"trips-service.com/src/config"
 )
 
 type Conext struct {
-	env      *config.Env
-	logger   *slog.Logger
-	gormDB   *gorm.DB
+	Env       *config.Env
+	Logger    *slog.Logger
+	GormDB    *gorm.DB
+	Validator *validator.Validate
 }
 
 type Router struct {
 	*PrefixMux
-	ctx    *Conext
+	ctx *Conext
 }
 
 type HandlerFunc func(http.ResponseWriter, *http.Request, *Conext)
 
 func (r *Router) Handle(patern string, handler HandlerFunc, method string) {
 	r.HandleFunc(patern, func(w http.ResponseWriter, req *http.Request) {
-		r.ctx.logger.Info("route hit", "method", method, "path", req.URL.Path)
+		r.ctx.Logger.Info("route hit", "method", method, "path", req.URL.Path)
 		if req.Method != method {
-			r.ctx.logger.Error("route not found", "method", method, "path", req.URL.Path)
+			r.ctx.Logger.Error("route not found", "method", method, "path", req.URL.Path)
 			http.Error(w, "Invalid method used on route", http.StatusNotFound)
 			return
 		}

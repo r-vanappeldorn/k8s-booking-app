@@ -6,42 +6,19 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/DATA-DOG/go-sqlmock"
-	"gorm.io/driver/mysql"
-	"gorm.io/gorm"
-	"trips-service.com/src/config"
-	"trips-service.com/src/server"
+	testutils "trips-service.com/test_utils"
 )
-
-func initTestServer() (*http.Server, sqlmock.Sqlmock, func() error, error) {
-	env := &config.Env{}
-
-	sqlDB, mock, err := sqlmock.New()
-
-	gormDB , err := gorm.Open(mysql.New(
-		mysql.Config{
-			Conn: sqlDB,
-		},
-	), &gorm.Config{})
-	if err != nil {
-		return nil, nil, nil, err
-	}
-
-	srv, _, err := server.Init(env, gormDB)
-
-	return srv, mock, sqlDB.Close, err
-}
 
 func TestHealthRoute(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "/api/trips/health", nil)
 	w := httptest.NewRecorder()
 
-	srv, _, close, err := initTestServer()
+	srv, ctx, err := testutils.InitTestServer()
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	defer close()
+	defer ctx.CloseSQLDB()
 
 	srv.Handler.ServeHTTP(w, req)
 
@@ -60,12 +37,12 @@ func TestHealthRoute(t *testing.T) {
 }
 
 func TestHealthRouteMethod(t *testing.T) {
-	srv, _, close, err := initTestServer()
+	srv, ctx, err := testutils.InitTestServer()
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	defer close()
+	defer ctx.CloseSQLDB()
 
 	req := httptest.NewRequest(http.MethodPost, "/api/trips/health", nil)
 	w := httptest.NewRecorder()
