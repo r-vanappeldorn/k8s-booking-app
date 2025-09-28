@@ -10,21 +10,37 @@ import (
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/go-sql-driver/mysql"
+	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/assert"
 	testutils "trips-service.com/test_utils"
 )
 
-func TestCreateContinent(t *testing.T) {
+func TestCreateContinentShouldGet401(t *testing.T) {
+	godotenv.Load(".env.test")
 	body := bytes.NewBufferString(`{"code":"NL","name":"The Netherlands"}`)
 	req := httptest.NewRequest(http.MethodPost, "/api/trips/continent", body)
 	req.Header.Set("Content-Type", "application/json")
 
 	w := httptest.NewRecorder()
 
-	srv, ctx, err := testutils.InitTestServer()
-	if err != nil {
-		t.Fatal(err)
-	}
+	srv, ctx := testutils.InitTestServer(t)
+	defer ctx.CloseSQLDB()
+
+	srv.Handler.ServeHTTP(w, req)
+
+	assert.Equal(t, http.StatusUnauthorized, w.Code)
+}
+
+func TestCreateContinent(t *testing.T) {
+	godotenv.Load(".env.test")
+	body := bytes.NewBufferString(`{"code":"NL","name":"The Netherlands"}`)
+	req := httptest.NewRequest(http.MethodPost, "/api/trips/continent", body)
+	req.Header.Set("Content-Type", "application/json")
+	testutils.SetAuthHeader(t, req)
+
+	w := httptest.NewRecorder()
+
+	srv, ctx := testutils.InitTestServer(t)
 
 	defer ctx.CloseSQLDB()
 
@@ -39,16 +55,15 @@ func TestCreateContinent(t *testing.T) {
 }
 
 func TestCreateContinentValidation(t *testing.T) {
+	godotenv.Load(".env.test")
 	body := bytes.NewBufferString(`{"code":"N","name":"NL"}`)
 	req := httptest.NewRequest(http.MethodPost, "/api/trips/continent", body)
 	req.Header.Set("Content-Type", "application/json")
+	testutils.SetAuthHeader(t, req)
 
 	w := httptest.NewRecorder()
 
-	srv, ctx, err := testutils.InitTestServer()
-	if err != nil {
-		t.Fatal(err)
-	}
+	srv, ctx := testutils.InitTestServer(t)
 
 	defer ctx.CloseSQLDB()
 
@@ -71,17 +86,15 @@ func TestCreateContinentValidation(t *testing.T) {
 }
 
 func TestCreateContinentAlreadyExistsInDB(t *testing.T) {
+	godotenv.Load(".env.test")
 	body := bytes.NewBufferString(`{"code":"NL","name":"The Netherlands"}`)
 	req := httptest.NewRequest(http.MethodPost, "/api/trips/continent", body)
 	req.Header.Set("Content-Type", "application/json")
+	testutils.SetAuthHeader(t, req)
 
 	w := httptest.NewRecorder()
 
-	srv, ctx, err := testutils.InitTestServer()
-	if err != nil {
-		t.Fatal(err)
-	}
-
+	srv, ctx := testutils.InitTestServer(t)
 	defer ctx.CloseSQLDB()
 
 	ctx.Mock.ExpectBegin()

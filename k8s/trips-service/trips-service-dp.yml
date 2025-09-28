@@ -50,5 +50,9 @@ spec:
               value: mariadb+pymysql://$(DB_USER):$(DB_PASSWORD)@trips-service-db-srv.$(POD_NAMESPACE).svc.cluster.local:3306/accounts?charset=utf8mb4
             - name: SERVER_NAME
               value: trips-service
+            - name: JWT_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  { name: accounts-service-secrets, key: jwt_secret_key }
           ports:
             - containerPort: 80

@@ -8,6 +8,7 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/go-sql-driver/mysql"
+	"trips-service.com/src/middleware"
 	"trips-service.com/src/models"
 	"trips-service.com/src/router"
 )
@@ -21,7 +22,7 @@ func NewContinentController(r *router.Router) *ContinentController {
 }
 
 func (c *ContinentController) Mount(r *router.Router) {
-	r.Post("/continent", c.Create)
+	r.Post("/continent", c.Create, middleware.NewAuthMidleware)
 }
 
 type CreateContinentRequest struct {

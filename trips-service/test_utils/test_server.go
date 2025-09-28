@@ -3,6 +3,7 @@ package testutils
 
 import (
 	"net/http"
+	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"gorm.io/driver/mysql"
@@ -17,12 +18,12 @@ type TestContext struct {
 	CloseSQLDB func() error
 }
 
-func InitTestServer() (*http.Server, *TestContext, error) {
+func InitTestServer(t *testing.T) (*http.Server, *TestContext) {
 	env := &config.Env{}
 
 	sqlDB, mock, err := sqlmock.New()
 	if err != nil {
-		return nil, nil, err
+		t.Fatal(err)
 	}
 
 	gormDB, err := gorm.Open(mysql.New(
@@ -32,14 +33,17 @@ func InitTestServer() (*http.Server, *TestContext, error) {
 		},
 	), &gorm.Config{})
 	if err != nil {
-		return nil, nil, err
+		t.Fatal(err)
 	}
 
 	srv, _, err := server.Init(env, gormDB)
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	return srv, &TestContext{
 		gormDB,
 		mock,
 		sqlDB.Close,
-	}, err
+	}
 }

@@ -13,11 +13,7 @@ func TestHealthRoute(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "/api/trips/health", nil)
 	w := httptest.NewRecorder()
 
-	srv, ctx, err := testutils.InitTestServer()
-	if err != nil {
-		t.Fatal(err)
-	}
-
+	srv, ctx := testutils.InitTestServer(t)
 	defer ctx.CloseSQLDB()
 
 	srv.Handler.ServeHTTP(w, req)
@@ -37,11 +33,7 @@ func TestHealthRoute(t *testing.T) {
 }
 
 func TestHealthRouteMethod(t *testing.T) {
-	srv, ctx, err := testutils.InitTestServer()
-	if err != nil {
-		t.Fatal(err)
-	}
-
+	srv, ctx := testutils.InitTestServer(t)
 	defer ctx.CloseSQLDB()
 
 	req := httptest.NewRequest(http.MethodPost, "/api/trips/health", nil)
