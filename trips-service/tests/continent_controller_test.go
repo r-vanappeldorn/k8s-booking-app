@@ -14,6 +14,25 @@ import (
 	testutils "trips-service.com/test_utils"
 )
 
+func TestCreateContinentShouldGet401(t *testing.T) {
+	body := bytes.NewBufferString(`{"code":"NL","name":"The Netherlands"}`)
+	req := httptest.NewRequest(http.MethodPost, "/api/trips/continent", body)
+	req.Header.Set("Content-Type", "application/json")
+
+	w := httptest.NewRecorder()
+
+	srv, ctx, err := testutils.InitTestServer()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	defer ctx.CloseSQLDB()
+
+	srv.Handler.ServeHTTP(w, req)
+
+	assert.Equal(t, http.StatusUnauthorized, w.Code)
+}
+
 func TestCreateContinent(t *testing.T) {
 	body := bytes.NewBufferString(`{"code":"NL","name":"The Netherlands"}`)
 	req := httptest.NewRequest(http.MethodPost, "/api/trips/continent", body)
