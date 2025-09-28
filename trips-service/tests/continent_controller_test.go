@@ -10,11 +10,13 @@ import (
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/go-sql-driver/mysql"
+	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/assert"
 	testutils "trips-service.com/test_utils"
 )
 
 func TestCreateContinentShouldGet401(t *testing.T) {
+	godotenv.Load(".env.test")
 	body := bytes.NewBufferString(`{"code":"NL","name":"The Netherlands"}`)
 	req := httptest.NewRequest(http.MethodPost, "/api/trips/continent", body)
 	req.Header.Set("Content-Type", "application/json")
@@ -30,6 +32,7 @@ func TestCreateContinentShouldGet401(t *testing.T) {
 }
 
 func TestCreateContinent(t *testing.T) {
+	godotenv.Load(".env.test")
 	body := bytes.NewBufferString(`{"code":"NL","name":"The Netherlands"}`)
 	req := httptest.NewRequest(http.MethodPost, "/api/trips/continent", body)
 	req.Header.Set("Content-Type", "application/json")
@@ -52,6 +55,7 @@ func TestCreateContinent(t *testing.T) {
 }
 
 func TestCreateContinentValidation(t *testing.T) {
+	godotenv.Load(".env.test")
 	body := bytes.NewBufferString(`{"code":"N","name":"NL"}`)
 	req := httptest.NewRequest(http.MethodPost, "/api/trips/continent", body)
 	req.Header.Set("Content-Type", "application/json")
@@ -82,6 +86,7 @@ func TestCreateContinentValidation(t *testing.T) {
 }
 
 func TestCreateContinentAlreadyExistsInDB(t *testing.T) {
+	godotenv.Load(".env.test")
 	body := bytes.NewBufferString(`{"code":"NL","name":"The Netherlands"}`)
 	req := httptest.NewRequest(http.MethodPost, "/api/trips/continent", body)
 	req.Header.Set("Content-Type", "application/json")
