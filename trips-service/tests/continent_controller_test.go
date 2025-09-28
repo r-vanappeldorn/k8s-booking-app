@@ -21,11 +21,7 @@ func TestCreateContinentShouldGet401(t *testing.T) {
 
 	w := httptest.NewRecorder()
 
-	srv, ctx, err := testutils.InitTestServer()
-	if err != nil {
-		t.Fatal(err)
-	}
-
+	srv, ctx := testutils.InitTestServer(t)
 	defer ctx.CloseSQLDB()
 
 	srv.Handler.ServeHTTP(w, req)
@@ -37,13 +33,11 @@ func TestCreateContinent(t *testing.T) {
 	body := bytes.NewBufferString(`{"code":"NL","name":"The Netherlands"}`)
 	req := httptest.NewRequest(http.MethodPost, "/api/trips/continent", body)
 	req.Header.Set("Content-Type", "application/json")
+	testutils.SetAuthHeader(t, req)
 
 	w := httptest.NewRecorder()
 
-	srv, ctx, err := testutils.InitTestServer()
-	if err != nil {
-		t.Fatal(err)
-	}
+	srv, ctx := testutils.InitTestServer(t)
 
 	defer ctx.CloseSQLDB()
 
@@ -61,13 +55,11 @@ func TestCreateContinentValidation(t *testing.T) {
 	body := bytes.NewBufferString(`{"code":"N","name":"NL"}`)
 	req := httptest.NewRequest(http.MethodPost, "/api/trips/continent", body)
 	req.Header.Set("Content-Type", "application/json")
+	testutils.SetAuthHeader(t, req)
 
 	w := httptest.NewRecorder()
 
-	srv, ctx, err := testutils.InitTestServer()
-	if err != nil {
-		t.Fatal(err)
-	}
+	srv, ctx := testutils.InitTestServer(t)
 
 	defer ctx.CloseSQLDB()
 
@@ -93,14 +85,11 @@ func TestCreateContinentAlreadyExistsInDB(t *testing.T) {
 	body := bytes.NewBufferString(`{"code":"NL","name":"The Netherlands"}`)
 	req := httptest.NewRequest(http.MethodPost, "/api/trips/continent", body)
 	req.Header.Set("Content-Type", "application/json")
+	testutils.SetAuthHeader(t, req)
 
 	w := httptest.NewRecorder()
 
-	srv, ctx, err := testutils.InitTestServer()
-	if err != nil {
-		t.Fatal(err)
-	}
-
+	srv, ctx := testutils.InitTestServer(t)
 	defer ctx.CloseSQLDB()
 
 	ctx.Mock.ExpectBegin()

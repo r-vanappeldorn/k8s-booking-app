@@ -11,7 +11,7 @@ import (
 type Claims struct {
 	Sub     string `json:"sub"`
 	Purpose string `json:"purpose"`
-	Minutes string `json:"minutes"`
+	Minutes int    `json:"minutes"`
 	jwt.RegisteredClaims
 }
 
@@ -21,7 +21,7 @@ func DecodeToken(tokenStr string, jwtSecretKey string) (*Claims, error) {
 			return nil, fmt.Errorf("unexpected alg: %v", t.Header["alg"])
 		}
 
-		return jwtSecretKey, nil
+		return []byte(jwtSecretKey), nil
 	}, jwt.WithValidMethods([]string{jwt.SigningMethodHS256.Alg()}))
 	if err != nil {
 		return nil, fmt.Errorf("token is invalid: %w", err)
@@ -36,7 +36,7 @@ func DecodeToken(tokenStr string, jwtSecretKey string) (*Claims, error) {
 		return nil, fmt.Errorf("invalid token")
 	}
 
-	if claims.Purpose != "sign_in" {
+	if claims.Purpose != "signed_in" {
 		return nil, errors.New("invalid purpose")
 	}
 
