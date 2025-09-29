@@ -13,6 +13,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: mailhog
+                name: mailhog-srv
                 port:
                   name: http
+
