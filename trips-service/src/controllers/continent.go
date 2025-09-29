@@ -8,6 +8,7 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/go-sql-driver/mysql"
+	utilerrors "trips-service.com/src/errors"
 	"trips-service.com/src/middleware"
 	"trips-service.com/src/models"
 	"trips-service.com/src/router"
@@ -30,13 +31,8 @@ type CreateContinentRequest struct {
 	Code string `json:"code" validate:"required,min=2,max=2"`
 }
 
-type CreateValidationErrorResponse struct {
-	Field   string `json:"field"`
-	Message string `json:"message"`
-}
-
-func getValidationErrorResponse(err error) []CreateValidationErrorResponse {
-	var res []CreateValidationErrorResponse
+func getValidationErrorResponse(err error) []*utilerrors.FieldError {
+	var res []*utilerrors.FieldError
 
 	for _, e := range err.(validator.ValidationErrors) {
 		message := ""
@@ -47,7 +43,7 @@ func getValidationErrorResponse(err error) []CreateValidationErrorResponse {
 			message = "Code must exactly be 2 characters long"
 		}
 
-		res = append(res, CreateValidationErrorResponse{
+		res = append(res, &utilerrors.FieldError{
 			Field:   e.Field(),
 			Message: message,
 		})
@@ -59,8 +55,8 @@ func getValidationErrorResponse(err error) []CreateValidationErrorResponse {
 func (c *ContinentController) Create(w http.ResponseWriter, req *http.Request, ctx *router.Conext) {
 	var body CreateContinentRequest
 	if err := json.NewDecoder(req.Body).Decode(&body); err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{"error": "Bad request"})
+		e := utilerrors.NewJSONErrorResponse(http.StatusBadRequest, "INVALID_REQUEST", "invalid request body provided")
+		utilerrors.WriteErrorResponse(w, e)
 
 		return
 	}
@@ -68,8 +64,9 @@ func (c *ContinentController) Create(w http.ResponseWriter, req *http.Request, c
 	defer req.Body.Close()
 
 	if err := ctx.Validator.Struct(&body); err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(getValidationErrorResponse(err))
+		e := utilerrors.NewJSONErrorResponse(http.StatusBadRequest, "INVALID_FIELD", "invalid value for field provided")
+		e.AddFieldErrors(getValidationErrorResponse(err))
+		utilerrors.WriteErrorResponse(w, e)
 
 		return
 	}
@@ -83,20 +80,23 @@ func (c *ContinentController) Create(w http.ResponseWriter, req *http.Request, c
 	var mysqlErr *mysql.MySQLError
 	if err != nil && errors.As(err, &mysqlErr) && mysqlErr.Number == 1062 {
 		w.WriteHeader(http.StatusBadRequest)
-		res := []CreateValidationErrorResponse{
+		fields := []*utilerrors.FieldError{
 			{
 				Field:   "code",
 				Message: "Country already exists",
 			},
 		}
-		json.NewEncoder(w).Encode(&res)
+
+		e := utilerrors.NewJSONErrorResponse(http.StatusBadRequest, "INVALID_FIELD", "invalid value for field provided")
+		e.AddFieldErrors(fields)
+		utilerrors.WriteErrorResponse(w, e)
 
 		return
 	}
 
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(map[string]string{"error": "Something went wrong"})
+		e := utilerrors.NewJSONErrorResponse(http.StatusInternalServerError, "INTERNAL_SERVER_ERROR", "Something went wrong")
+		utilerrors.WriteErrorResponse(w, e)
 		ctx.Logger.Error(fmt.Sprintf("error while trying to create continent: %v", err))
 
 		return

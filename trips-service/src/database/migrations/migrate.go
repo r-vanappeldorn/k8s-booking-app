@@ -12,6 +12,7 @@ func Migrations() []*gormigrate.Migration {
 		migratiom0002CreateCountryTable(),
 		migratiom0003CreateLocationTable(),
 		migratiom0004CreateTripTable(),
+		migration0005AlterContinentCodeColumn(),
 	}
 }
 
