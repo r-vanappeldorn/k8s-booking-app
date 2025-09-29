@@ -12,6 +12,7 @@ import (
 	"github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/assert"
+	"trips-service.com/src/errors"
 	testutils "trips-service.com/test_utils"
 )
 
@@ -69,16 +70,16 @@ func TestCreateContinentValidation(t *testing.T) {
 
 	srv.Handler.ServeHTTP(w, req)
 
-	var res []map[string]string
+	var res errors.JSONErrorResponse
 	json.Unmarshal(w.Body.Bytes(), &res)
 
-	if len(res) < 1 {
+	if len(res.Detail.Fields) < 1 {
 		t.Fatal("error response was empty")
 	}
 
 	messageByField := make(map[string]string)
-	for _, e := range res {
-		messageByField[e["field"]] = e["message"]
+	for _, e := range res.Detail.Fields {
+		messageByField[e.Field] = e.Message
 	}
 
 	assert.Equal(t, messageByField["Code"], "Code must exactly be 2 characters long")
@@ -107,14 +108,14 @@ func TestCreateContinentAlreadyExistsInDB(t *testing.T) {
 
 	fmt.Printf("%+v\n", w.Body)
 
-	var res []map[string]string
+	var res errors.JSONErrorResponse
 	json.Unmarshal(w.Body.Bytes(), &res)
 
-	if len(res) < 1 {
+	if len(res.Detail.Fields) < 1 {
 		t.Fatal("error response was empty")
 	}
 
-	assert.Equal(t, "code", res[0]["field"])
-	assert.Equal(t, "Country already exists", res[0]["message"])
+	assert.Equal(t, "code", res.Detail.Fields[0].Field)
+	assert.Equal(t, "Country already exists", res.Detail.Fields[0].Message)
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 }

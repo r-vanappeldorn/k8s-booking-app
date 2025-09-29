@@ -89,7 +89,6 @@ func (c *ContinentController) Create(w http.ResponseWriter, req *http.Request, c
 
 		e := utilerrors.NewJSONErrorResponse(http.StatusBadRequest, "INVALID_FIELD", "invalid value for field provided")
 		e.AddFieldErrors(fields)
-		e.AddFieldErrors(getValidationErrorResponse(err))
 		utilerrors.WriteErrorResponse(w, e)
 
 		return
