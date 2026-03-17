@@ -2,6 +2,7 @@ from fastapi import FastAPI, APIRouter
 from src.controllers.health import router as health_controller
 from src.controllers.auth import router as auth_controller
 
+
 def init_app() -> FastAPI:
     app = FastAPI(title="Accounts service", version="1.0.0")
     api_router = APIRouter(prefix="/api/accounts")

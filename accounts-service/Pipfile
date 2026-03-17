@@ -20,6 +20,7 @@ jinja2 = "*"
 pytest = "*"
 pytest-cov = "*"
 httpx = "*"
+ruff = "*"
 
 [requires]
 python_version = "3.13"
