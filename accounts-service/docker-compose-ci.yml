@@ -1,0 +1,21 @@
+services:
+  accounts-service-db:
+    image: mariadb:12.0.2
+    environment:
+      - MARIADB_DATABASE=accounts
+      - MARIADB_USER=${DB_USER:-dev}
+      - MARIADB_PASSWORD=${DB_PASSWORD:-password}
+      - MARIADB_ROOT_PASSWORD=${DB_ROOT_PASSWORD:-root}
+  tests:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - DATABASE_URL=mariadb+pymysql://${DB_USER:-dev}:${DB_PASSWORD:-password}@accounts-service-db:3306/accounts?charset=utf8mb4
+    depends_on:
+      - accounts-service-db
+    command: >
+      sh -lc "
+      alembic upgrade head &&
+      pytest -q
+      "
